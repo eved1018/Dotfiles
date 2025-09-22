@@ -9,6 +9,8 @@ alias m="cmatrix"
 alias raji="cd Desktop/Research_Evan/Raji_Summer2019_atom"
 # alias g++="/opt/homebrew/Cellar/gcc/11.2.0/bin/g++-11"
 alias nconf="nvim $HOME/.config/nvim/init.lua"
+alias zconf="nvim $HOME/.zshrc"
+alias uconf="bash /Users/evanedelstein/Documents/CodingProjects/dotfiles/update.sh"
 
 
 # command prompt colors
