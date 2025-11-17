@@ -12,11 +12,11 @@ alias nconf="nvim $HOME/.config/nvim/init.lua"
 alias zconf="nvim $HOME/.zshrc"
 alias uconf="bash /Users/evanedelstein/Documents/CodingProjects/dotfiles/update.sh"
 alias n='nvim'
-
-
+alias lz="lazygit"
+alias bake="bear -- make"
 export RIPGREP_CONFIG_PATH=$HOME/.config/ripgrep/.ripgreprc
 
-
+# search for string in file
 fif() {
   if [ ! "$#" -gt 0 ]; then echo "Need a string to search for\!"; return 1; fi
   rg --files-with-matches --no-messages "$1" | fzf --preview "highlight -O ansi -l {} 2> /dev/null | rg --colors 'match:bg:yellow' --ignore-case --pretty --context 10 '$1' || rg --ignore-case --pretty --context 10 '$1' {}"

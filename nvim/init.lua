@@ -44,17 +44,31 @@ vim.pack.add({
 	{src = 'https://github.com/igorlfs/nvim-dap-view'},
 	{src = 'https://github.com/akinsho/toggleterm.nvim'},
 	{src = 'https://github.com/nvim-mini/mini.completion'},
-	{src = 'https://github.com/RRethy/vim-illuminate'}
+	{src = 'https://github.com/RRethy/vim-illuminate'},
+	{src = 'https://github.com/kdheepak/lazygit.nvim'},
+	{src = 'https://github.com/m00qek/baleia.nvim'},
+	{src = 'https://github.com/nvim-lua/plenary.nvim'},
+	{src = 'https://github.com/ej-shafran/compile-mode.nvim'}
 
 })
 
 
-require "mini.pick".setup()
+require("mini.pick").setup()
 require("nvim-tree").setup {view = {side = "left"}}
 require("toggleterm").setup{}
 require("mini.completion").setup()
 require("illuminate").configure()
-
+require("lazygit")
+vim.g.baleia = require("baleia").setup({ })
+vim.api.nvim_create_autocmd({ "BufReadPost" }, {
+  pattern = "quickfix",
+  callback = function()
+    vim.api.nvim_set_option_value("modifiable", true, { buf = buffer })
+    vim.g.baleia.automatically(vim.api.nvim_get_current_buf())
+    vim.api.nvim_set_option_value("modified", false, { buf = buffer })
+    vim.api.nvim_set_option_value("modifiable", false, { buf = buffer })
+  end,
+})
 -- LSP
 vim.lsp.enable( {"clangd", "ty", "ruff"})
 vim.lsp.config['ty'] = {root_markers = {"ty.toml", "pyproject.toml", ".git", ".py" }}
@@ -119,6 +133,9 @@ end
 
 vim.keymap.set('n', '<leader>M', MakeRunWithArgs, { desc = "Run make with ARGS", noremap = true, silent = true })
 vim.keymap.set('n', '<leader>m', ':w<CR> :mak! <CR>')
+
+
+
 vim.api.nvim_create_autocmd("QuickFixCmdPost", {
   pattern = "*",
   command = "cwindow",
