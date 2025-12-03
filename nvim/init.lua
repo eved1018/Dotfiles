@@ -48,7 +48,9 @@ vim.pack.add({
 	{src = 'https://github.com/kdheepak/lazygit.nvim'},
 	{src = 'https://github.com/m00qek/baleia.nvim'},
 	{src = 'https://github.com/nvim-lua/plenary.nvim'},
-	{src = 'https://github.com/ej-shafran/compile-mode.nvim'}
+	{src = 'https://github.com/ej-shafran/compile-mode.nvim'},
+	{src = 'https://github.com/nvim-treesitter/nvim-treesitter'},
+	{src = 'https://github.com/MeanderingProgrammer/render-markdown.nvim'}
 
 })
 
@@ -59,16 +61,7 @@ require("toggleterm").setup{}
 require("mini.completion").setup()
 require("illuminate").configure()
 require("lazygit")
-vim.g.baleia = require("baleia").setup({ })
-vim.api.nvim_create_autocmd({ "BufReadPost" }, {
-  pattern = "quickfix",
-  callback = function()
-    vim.api.nvim_set_option_value("modifiable", true, { buf = buffer })
-    vim.g.baleia.automatically(vim.api.nvim_get_current_buf())
-    vim.api.nvim_set_option_value("modified", false, { buf = buffer })
-    vim.api.nvim_set_option_value("modifiable", false, { buf = buffer })
-  end,
-})
+
 -- LSP
 vim.lsp.enable( {"clangd", "ty", "ruff"})
 vim.lsp.config['ty'] = {root_markers = {"ty.toml", "pyproject.toml", ".git", ".py" }}
@@ -113,6 +106,14 @@ vim.keymap.set('t', '<C-w>Left', [[<C-\><C-n><C-w>]], opts)
 vim.keymap.set('t', '<C-w>Up', [[<C-\><C-n><C-w>]], opts)
 vim.keymap.set('t', '<C-w>Down', [[<C-\><C-n><C-w>]], opts)
 
+
+vim.api.nvim_set_keymap('c', '<Up>', 'wildmenumode() ? "<Left>" : "<Up>"', {expr = true, noremap=true})
+vim.api.nvim_set_keymap('c', '<Down>', 'wildmenumode() ? "<Right>" : "<Down>"', {expr = true, noremap=true})
+vim.api.nvim_set_keymap('c', '<Left>', 'wildmenumode() ? "<Up>" : "<Left>"', {expr = true, noremap=true})
+vim.api.nvim_set_keymap('c', '<Right>', 'wildmenumode() ? "<Down>" : "<Right>"', {expr = true, noremap=true})
+
+
+
 -- C/C++ CONFIG
 
 -- Function to prompt for args and run make with ARGS="..." run
@@ -133,7 +134,6 @@ end
 
 vim.keymap.set('n', '<leader>M', MakeRunWithArgs, { desc = "Run make with ARGS", noremap = true, silent = true })
 vim.keymap.set('n', '<leader>m', ':w<CR> :mak! <CR>')
-
 
 
 vim.api.nvim_create_autocmd("QuickFixCmdPost", {
