@@ -1,3 +1,11 @@
+-- TODO
+	-- add way to toggle macro directives, and/or syntax highlight all c code even if "InactiveCode"  
+	-- dont load clangd if cant find complile.json + option to set path to compile.json
+	-- swet makeprg to use bear and be in the right place
+	-- proper colors in quickfix after makeprg 
+	-- jump/list todos 
+	-- delete unused plugins
+
 -- basic configs
 vim.opt.winborder = "rounded"
 vim.opt.showmode = false
@@ -30,30 +38,62 @@ vim.cmd([[autocmd FileType * set formatoptions-=cro]])
 
 -- Plugins
 
+-- look into https://github.com/stevearc/oil.nvim
+-- look into https://github.com/chentoast/marks.nvim
+-- look into https://github.com/folke/todo-comments.nvim/
+-- look into https://github.com/folke/trouble.nvim/tree/main
+
 vim.pack.add({
-	{src = 'https://github.com/ellisonleao/gruvbox.nvim'},
-	{src = 'https://github.com/vague2k/vague.nvim'},
-	{src = 'https://github.com/nvim-lualine/lualine.nvim'},
-	{src = 'https://github.com/echasnovski/mini.pick'},
-	{src = 'https://github.com/nvim-lualine/lualine.nvim'},
-	{src = 'https://github.com/nvim-tree/nvim-tree.lua'},
-	{src = 'https://github.com/neovim/nvim-lspconfig'},
+	-- ui 
+	{src = 'https://github.com/vague2k/vague.nvim'}, 
+	{src = 'https://github.com/nvim-lualine/lualine.nvim'}, 
 	{src = 'https://github.com/archibate/lualine-time'},
 	{src = 'https://github.com/akinsho/bufferline.nvim'},
+	{src = 'https://github.com/RRethy/vim-illuminate'},
+	-- file explorer 
+	{src = 'https://github.com/echasnovski/mini.pick'},
+	{src = 'https://github.com/nvim-tree/nvim-tree.lua'},
+	-- lsp 
+	{src = 'https://github.com/neovim/nvim-lspconfig'},
 	{src = 'https://github.com/mfussenegger/nvim-dap'},
 	{src = 'https://github.com/igorlfs/nvim-dap-view'},
-	{src = 'https://github.com/akinsho/toggleterm.nvim'},
+	{src = 'https://github.com/nvim-treesitter/nvim-treesitter'},
+	{src = 'https://github.com/MeanderingProgrammer/render-markdown.nvim'},
 	{src = 'https://github.com/nvim-mini/mini.completion'},
-	{src = 'https://github.com/RRethy/vim-illuminate'},
-	{src = 'https://github.com/kdheepak/lazygit.nvim'},
+	-- Compile mode
 	{src = 'https://github.com/m00qek/baleia.nvim'},
 	{src = 'https://github.com/nvim-lua/plenary.nvim'},
 	{src = 'https://github.com/ej-shafran/compile-mode.nvim'},
-	{src = 'https://github.com/nvim-treesitter/nvim-treesitter'},
-	{src = 'https://github.com/MeanderingProgrammer/render-markdown.nvim'}
+	-- other
+	{src = 'https://github.com/akinsho/toggleterm.nvim'},
+	{src = 'https://github.com/kdheepak/lazygit.nvim'},
 
 })
 
+local function pack_clean()
+	local active_plugins = {}
+	local unused_plugins = {}
+
+	for _, plugin in ipairs(vim.pack.get()) do
+		active_plugins[plugin.spec.name] = plugin.active
+	end
+
+	for _, plugin in ipairs(vim.pack.get()) do
+		if not active_plugins[plugin.spec.name] then
+			table.insert(unused_plugins, plugin.spec.name)
+		end
+	end
+
+	if #unused_plugins == 0 then
+		print("No unused plugins.")
+		return
+	end
+
+	local choice = vim.fn.confirm("Remove unused plugins?", "&Yes\n&No", 2)
+	if choice == 1 then
+		vim.pack.del(unused_plugins)
+	end
+end
 
 require("mini.pick").setup()
 require("nvim-tree").setup {view = {side = "left"}}
@@ -67,6 +107,7 @@ vim.lsp.enable( {"clangd", "ty", "ruff"})
 vim.lsp.config['ty'] = {root_markers = {"ty.toml", "pyproject.toml", ".git", ".py" }}
 vim.lsp.config['ruff'] = {root_markers = {"ty.toml", "pyproject.toml", ".git", ".py" }}
 
+
 -- KEYMAPS
 local opts = { noremap=true, silent=true }
 
@@ -74,12 +115,11 @@ local opts = { noremap=true, silent=true }
 vim.keymap.set('n', '<leader>t', ":NvimTreeToggle<CR>")
 vim.keymap.set('n', '<leader>b', ":bNext<CR>")
 vim.keymap.set('n', '<leader>f', ":Pick files<CR>")
-
+vim.keymap.set("n", "<leader>pc", pack_clean)
 
 -- helps
 vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
 vim.keymap.set('n', 's', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
--- vim.keymap.set('i', ',s', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
 
 -- jumps
 vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
@@ -97,34 +137,50 @@ vim.keymap.set('n', ',rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
 vim.keymap.set('n', ',a', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
 vim.keymap.set('n', ',f', '<cmd>lua vim.lsp.buf.format()<CR>', opts)
 
+--yanks
+vim.keymap.set({ "v", "x", "n" }, "<C-y>", '"+y', { desc = "System clipboard yank." })
+
 
 -- terminal 
-local opts = {buffer = 0}
-vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], opts)
-vim.keymap.set('t', '<C-w>Right', [[<C-\><C-n><C-w>]], opts)
-vim.keymap.set('t', '<C-w>Left', [[<C-\><C-n><C-w>]], opts)
-vim.keymap.set('t', '<C-w>Up', [[<C-\><C-n><C-w>]], opts)
-vim.keymap.set('t', '<C-w>Down', [[<C-\><C-n><C-w>]], opts)
+local opts = {noremap = true}
+vim.keymap.set('n', '<C-j>', ':ToggleTerm  <CR>', opts)
+vim.keymap.set('t', '<C-w>', [[<C-\><C-n><C-w>]], opts)
+vim.keymap.set('t', '<C-w>Right' , '<C-\\><C-n><C-w><Right>', opts)
+vim.keymap.set('t', '<C-w><Left>', '<C-\\><C-n><C-w><Left>', opts)
+vim.keymap.set('t', '<C-w><Down>', '<C-\\><C-n><C-w><Down>', opts)
+vim.keymap.set('t', '<C-w><Up>'  , '<C-\\><C-n><C-w><Up>', opts)
 
+vim.api.nvim_create_autocmd("TermOpen", {
+	callback = function()
+		vim.api.nvim_buf_set_keymap(0, "n", "<CR>", "<CMD>startinsert<CR>", {noremap= true, silent = true})
+	end,
+})
 
+-- WildMenu 
 vim.api.nvim_set_keymap('c', '<Up>', 'wildmenumode() ? "<Left>" : "<Up>"', {expr = true, noremap=true})
 vim.api.nvim_set_keymap('c', '<Down>', 'wildmenumode() ? "<Right>" : "<Down>"', {expr = true, noremap=true})
 vim.api.nvim_set_keymap('c', '<Left>', 'wildmenumode() ? "<Up>" : "<Left>"', {expr = true, noremap=true})
 vim.api.nvim_set_keymap('c', '<Right>', 'wildmenumode() ? "<Down>" : "<Right>"', {expr = true, noremap=true})
 
-
-
 -- C/C++ CONFIG
-
+-- COMPILATION -----------------------------
+-- TODO make this relative to root folder
+-- vim.cmd([[
+-- 		set makeprg=bear -- make;
+-- ]])
+--]
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "c",
+  callback = function()
+    vim.opt_local.makeprg = "bear -- make"
+  end,
+})
 -- Function to prompt for args and run make with ARGS="..." run
 function MakeRunWithArgs()
   vim.ui.input({ prompt = "Enter arguments for make run: " }, function(input)
     if input then
-      -- Escape double quotes in the input
       local escaped_input = input:gsub('"', '\\"')
-      -- Build the make command with ARGS
       local cmd = string.format('make ARGS="%s" run', escaped_input)
-      -- Execute the command in Neovim
       vim.cmd(cmd)
     else
       print("MakeRunWithArgs cancelled")
@@ -142,6 +198,7 @@ vim.api.nvim_create_autocmd("QuickFixCmdPost", {
 })
 
 
+-- DEBUG -----------------------------
 local dap = require('dap')
 dap.adapters.lldb = {
   type = 'executable',
