@@ -53,6 +53,8 @@ vim.pack.add({
 	-- file explorer 
 	{src = 'https://github.com/echasnovski/mini.pick'},
 	{src = 'https://github.com/nvim-tree/nvim-tree.lua'},
+	{src = 'https://github.com/airblade/vim-rooter'},
+	
 	-- lsp 
 	{src = 'https://github.com/neovim/nvim-lspconfig'},
 	{src = 'https://github.com/mfussenegger/nvim-dap'},
@@ -60,10 +62,12 @@ vim.pack.add({
 	{src = 'https://github.com/nvim-treesitter/nvim-treesitter'},
 	{src = 'https://github.com/MeanderingProgrammer/render-markdown.nvim'},
 	{src = 'https://github.com/nvim-mini/mini.completion'},
-	-- Compile mode
-	{src = 'https://github.com/m00qek/baleia.nvim'},
-	{src = 'https://github.com/nvim-lua/plenary.nvim'},
-	{src = 'https://github.com/ej-shafran/compile-mode.nvim'},
+
+	
+	-- -- Compile mode
+	-- {src = 'https://github.com/m00qek/baleia.nvim'},
+	-- {src = 'https://github.com/nvim-lua/plenary.nvim'},
+	-- {src = 'https://github.com/ej-shafran/compile-mode.nvim'},
 	-- other
 	{src = 'https://github.com/akinsho/toggleterm.nvim'},
 	{src = 'https://github.com/kdheepak/lazygit.nvim'},
@@ -118,11 +122,11 @@ vim.keymap.set('n', '<leader>b', ":bNext<CR>")
 vim.keymap.set('n', '<leader>f', ":Pick files<CR>")
 vim.keymap.set("n", "<leader>pc", pack_clean)
 
--- helps
+-- lsp helps
 vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
 vim.keymap.set('n', 's', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
 
--- jumps
+-- lsp jumps
 vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
 vim.keymap.set("n", "ge", '<cmd> lua vim.diagnostic.open_float()<CR>', opts)
 vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
@@ -130,7 +134,7 @@ vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
 vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
 vim.keymap.set('n', 'gt', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
 
--- actions
+-- lsp actions
 vim.keymap.set('n', ',wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
 vim.keymap.set('n', ',wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
 vim.keymap.set('n', ',wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
@@ -138,8 +142,11 @@ vim.keymap.set('n', ',rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
 vim.keymap.set('n', ',a', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
 vim.keymap.set('n', ',f', '<cmd>lua vim.lsp.buf.format()<CR>', opts)
 
---yanks
+-- yanks
 vim.keymap.set({ "v", "x", "n" }, "<C-y>", '"+y', { desc = "System clipboard yank." })
+
+-- buffers
+vim.keymap.set('n', '<C-b>', ":ls<CR>:b")
 
 
 -- terminal 
@@ -165,17 +172,17 @@ vim.api.nvim_set_keymap('c', '<Right>', 'wildmenumode() ? "<Down>" : "<Right>"',
 
 -- C/C++ CONFIG
 -- COMPILATION -----------------------------
+-- TODO set to bear -- make 
+
 -- TODO make this relative to root folder
--- vim.cmd([[
--- 		set makeprg=bear -- make;
--- ]])
---]
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "c",
+vim.api.nvim_create_autocmd({'BufEnter', 'BufWinEnter'}, {
+  pattern = {'*.c', '*.h'},
   callback = function()
-    vim.opt_local.makeprg = "bear -- make"
-  end,
+	  local cmd = string.format("bear -- make")
+    vim.opt_local.makeprg = cmd
+  end
 })
+
 -- Function to prompt for args and run make with ARGS="..." run
 function MakeRunWithArgs()
   vim.ui.input({ prompt = "Enter arguments for make run: " }, function(input)
@@ -197,6 +204,16 @@ vim.api.nvim_create_autocmd("QuickFixCmdPost", {
   pattern = "*",
   command = "cwindow",
 })
+
+--- Compile Mode --------
+
+-- vim.g.compilation_directory =
+
+-- vim.g.compile_mode = {
+-- 	-- for an empty prompt
+-- 	default_command = "bear -- make",
+-- 	-- baleia_setup = true
+-- }
 
 
 -- DEBUG -----------------------------
