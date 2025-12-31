@@ -4,3 +4,6 @@ AlignConsecutiveAssignments: Consecutive
 PointerAlignment: Left
 ColumnLimit: 120
 SpaceAfterCStyleCast: true
+AlignConsecutiveMacros: true
+IndentCaseLabels: true
+IndentCaseBlocks: false

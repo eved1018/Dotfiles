@@ -7,6 +7,7 @@ mkdir -p nvim
 cp ~/.config/nvim/init.lua nvim/
 cp ~/.zshrc .
 cp ~/.clang-format .
+cp ~/.tmux.conf .
 echo "Pushing to git"
 
 git add .

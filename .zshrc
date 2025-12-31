@@ -34,7 +34,7 @@ PS1="%{$fg[green]%}%n@%m%{$reset_color%}:%{$fg[cyan]%}%~%{$reset_color%} %% "
 
 #autocomplete
 autoload -Uz compinit && compinit
-RPROMPT="[%D{%f/%m/%y} | %D{%L:%M:%S}]"
+# RPROMPT="[%D{%f/%m/%y} | %D{%L:%M:%S}]"
 setopt PROMPT_SUBST
 # alias rpi="ssh f24s04@ssh.chuckkann2.hostedpi.com -p 5422"
 
