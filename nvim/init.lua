@@ -72,8 +72,7 @@ vim.pack.add({
 	{src = 'https://github.com/akinsho/toggleterm.nvim'}, -- toggle a terminal like vscode 
 	{src = 'https://github.com/kdheepak/lazygit.nvim'}, -- git ui
 	{src = 'https://github.com/gcmt/cmdfix.nvim'}, -- allow lower-case commands 
-	{src = "https://github.com/ThePrimeagen/refactoring.nvim"}, 	
-
+	{src = "https://github.com/ThePrimeagen/refactoring.nvim"}, -- adds vscode style refactoring 
 
 })
 
@@ -104,7 +103,7 @@ local function pack_clean()
 end
 vim.api.nvim_create_user_command('PackClean', pack_clean, {})
 
--- Function to insert plugin configuration line 
+-- Function to insert plugin configuration line - takes url as arg
 local function insert_plugin(url)
   local row, col = unpack(vim.api.nvim_win_get_cursor(0))
   local line = string.format('{src = "%s"}, ', url)
